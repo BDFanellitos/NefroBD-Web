@@ -15,7 +15,7 @@ window.addEventListener("DOMContentLoaded", () => {
         const username = document.getElementById('username_login').value;
         const senha = document.getElementById('username_password').value;
 
-        const BASE_URL = 'https://nefrobd-backend.onrender.com';
+        const BASE_URL = 'https://nefrobd-web.onrender.com';
 
         try {
             const res = await fetch(`${BASE_URL}/api/login`, {
