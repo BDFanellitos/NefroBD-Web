@@ -1,0 +1,10 @@
+[
+    {
+        "table_name": "ANTICORPO 1a",
+        "table_type": "anticorpo"
+    },
+    {
+        "table_name": "Almoxarife",
+        "table_type": "estoque"
+    }
+]
