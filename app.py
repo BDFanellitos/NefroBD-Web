@@ -4,9 +4,10 @@ import bd as bd
 import json
 import csv
 from io import StringIO
+from os import environ
 
 app = Flask(__name__)
-CORS(app)  # Libera o acesso para o frontend local
+CORS(app, origins=["https://bdfanellitos.github.io"])  # Libera só o seu GitHub Pages
 
 # Criar tabelas se não existirem
 bd.criar_tabela_usuarios()
@@ -38,7 +39,6 @@ def reset_password():
     return jsonify({'status': 'success'})
 
 ## MANEJO DE TABELAS
-# Carregar/salvar tabelas
 def carregar_tabelas():
     try:
         with open("tabelas_criadas.json", "r") as f:
@@ -58,17 +58,14 @@ def criar_tabela():
 
     tabelas = carregar_tabelas()
 
-    # Verifica duplicidade
     if any(t['table_name'].lower() == nome.lower() for t in tabelas):
         return jsonify({'status': 'error', 'message': 'Essa tabela já existe.'}), 400
 
-    # Criação real
     if tipo == 'anticorpo':
         bd.criar_tabelas_anticorpos(nome)
     else:
         bd.criar_tabelas_estoque(nome)
 
-    # Salvar no JSON
     tabelas.append({"table_name": nome, "table_type": tipo})
     salvar_tabelas(tabelas)
 
@@ -79,55 +76,12 @@ def listar_tabelas():
     tabelas = carregar_tabelas()
     return jsonify({'tabelas': tabelas})
 
-###
-# @app.route('/api/categorias', methods=['GET'])
-# def listar_categorias():
-#     categorias = bd.listar_categorias()
-#     return jsonify({'categorias': categorias})
-
-# @app.route('/api/criar_tabela', methods=['POST'])
-# def criar_tabela():
-#     data = request.json
-#     if data['tipo'] == 'estoque':
-#         bd.criar_tabelas_estoque(data['nome'])
-#     else:
-#         bd.criar_tabelas_anticorpos(data['nome'])
-#     return jsonify({'status': 'success'})
-
-# @app.route('/api/deletar_tabela', methods=['POST'])
-# def deletar_tabela():
-#     data = request.json
-#     msg = bd.deletar_tabela(data['nome'])
-#     return jsonify({'status': 'success', 'message': msg})
-
-# @app.route('/api/itens/<categoria>', methods=['GET'])
-# def listar_itens(categoria):
-#     try:
-#         itens = bd.listar_itens(categoria)
-#     except:
-#         itens = bd.listar_itens_anticorpo(categoria)
-#     return jsonify({'itens': itens})
-
-# @app.route('/api/inserir_item', methods=['POST'])
-# def inserir_item():
-#     data = request.json
-#     tipo = data['tipo']
-#     if tipo == 'estoque':
-#         bd.inserir_item_estoque(data['categoria'], data['item'], data['infos'], data['quantidade'], data['usuario'])
-#     else:
-#         bd.inserir_item_anticorpo(
-#             data['categoria'], data['codigo'], data['nome'], data['alvo'], data['host'],
-#             data['conjugado'], data['marca'], data['aliquotas'], data['vials'], data['usuario']
-#         )
-#     return jsonify({'status': 'success'})
-
 ## PONTO
 @app.route('/api/ponto', methods=['POST'])
 def registrar_ponto():
     data = request.json
     bd.registrar_ponto(data['usuario'], data['data'], data['entrada'], data.get('saida'))
     return jsonify({'status': 'success'})
-
 
 @app.route('/api/exportar_ponto', methods=['GET'])
 def exportar_ponto():
@@ -153,18 +107,7 @@ def exportar_ponto():
         headers={'Content-Disposition': f'attachment; filename=ponto_{usuario}.csv'}
     )
 
-
-### NÃO MEXER ABAIXO
-@app.route('/')
-def index():
-    return send_from_directory('frontend', 'index.html')
-
-@app.route('/<path:path>')
-def static_proxy(path):
-    return send_from_directory('frontend', path)
-
+# Início do servidor (Render usa PORT)
 if __name__ == '__main__':
-    from os import environ
     port = int(environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
-

@@ -1,3 +1,8 @@
+const BASE_URL = window.location.hostname.includes('localhost')
+  ? 'http://localhost:5000'
+  : 'https://nefrobd-backend.onrender.com';
+
+
 window.addEventListener("DOMContentLoaded", () => {
     console.log("JS carregado");
 
@@ -10,12 +15,15 @@ window.addEventListener("DOMContentLoaded", () => {
         const username = document.getElementById('username_login').value;
         const senha = document.getElementById('username_password').value;
 
+        const BASE_URL = 'https://nefrobd-backend.onrender.com';
+
         try {
-            const res = await fetch('http://localhost:5000/api/login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username, senha })
+            const res = await fetch(`${BASE_URL}/api/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, senha })
             });
+
 
             const data = await res.json();
 
@@ -55,10 +63,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         try {
-        const res = await fetch('http://localhost:5000/api/register', {
+            const res = await fetch(`${BASE_URL}/api/register`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ username, email, senha })
+            });
+
         });
 
         const data = await res.json();
@@ -102,10 +112,12 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         try {
-        const res = await fetch('http://localhost:5000/api/criar_tabela', {
+            const res = await fetch(`${BASE_URL}/api/criar_tabela`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ nome, tipo })
+            });
+
         });
 
         const data = await res.json();
@@ -124,7 +136,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     async function carregarTabelas() {
         try {
-        const res = await fetch('http://localhost:5000/api/categorias');
+        const res = await fetch(`${BASE_URL}/api/categorias`);
         const data = await res.json();
 
         listaTabelas.innerHTML = '';
@@ -195,10 +207,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         try {
-        const res = await fetch('http://localhost:5000/api/ponto', {
+            const res = await fetch(`${BASE_URL}/api/ponto`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ usuario, data, entrada, saida })
+            });
+
         });
 
         const response = await res.json();
@@ -219,7 +233,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const usuario = document.getElementById('ponto_usuario').value;
 
     try {
-        const res = await fetch(`http://localhost:5000/api/exportar_ponto?usuario=${encodeURIComponent(usuario)}`);
+        const res = await fetch(`${BASE_URL}/api/exportar_ponto?usuario=${encodeURIComponent(usuario)}`);
         if (!res.ok) {
         throw new Error('Erro ao exportar ponto.');
         }
