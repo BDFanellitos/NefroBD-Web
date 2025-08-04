@@ -7,7 +7,8 @@ from io import StringIO
 from os import environ
 
 app = Flask(__name__)
-CORS(app, origins=["https://bdfanellitos.github.io"])  # Libera só o seu GitHub Pages
+CORS(app)  
+
 
 # Criar tabelas se não existirem
 bd.criar_tabela_usuarios()
