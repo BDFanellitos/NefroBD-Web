@@ -29,7 +29,7 @@ window.addEventListener("DOMContentLoaded", () => {
             if (res.ok && data.status === 'success') {
                 alert('Login bem-sucedido! Bem-vindo, ' + data.user);
                 localStorage.setItem('usuario', data.user);
-                window.location.href = './home.html'; 
+                window.location.href = 'https://bdfanellitos.github.io/NefroBD-Web/frontend/home.html'; 
             } else {
                 alert(data.message || 'Erro ao fazer login');
             }
