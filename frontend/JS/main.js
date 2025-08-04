@@ -1,6 +1,4 @@
-const BASE_URL = window.location.hostname.includes('localhost')
-  ? 'http://localhost:5000'
-  : 'https://nefrobd-web.onrender.com';
+const BASE_URL = 'https://nefrobd-web.onrender.com';
 
 
 window.addEventListener("DOMContentLoaded", () => {
