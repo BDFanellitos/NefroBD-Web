@@ -1,0 +1,34 @@
+<html lang="pt-BR" class="scroll-smooth" style="scroll-behavior:smooth;">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>NefroBD Login</title>
+<script src="./JS/main.js"></script>
+<script src="https://cdn.tailwindcss.com"></script>
+
+<style>
+  /* Custom scrollbar hidden for cleaner look */
+::-webkit-scrollbar {
+    display: none;
+}
+
+</style>
+</head>
+<body class="bg-[#6478a3] min-h-screen flex items-center justify-center font-sans">
+    <form id="login_form" class="bg-[#f7f7f2] p-8 w-[420px] max-w-full rounded-none" action="#">
+    <div class="grid grid-cols-[140px_1fr] gap-x-4 gap-y-6 items-center text-[#6478a3] font-semibold text-sm leading-5">
+        <label for="username" class="text-right">NOME DE USUÁRIO</label>
+        <input id="username_login" name="username" type="text" class="border border-gray-300 px-2 py-1 focus:outline-none focus:ring-1 focus:ring-[#6478a3]" />
+
+        <label for="password" class="text-right">SENHA</label>
+        <input id="username_password" name="password" type="password" class="border border-gray-300 px-2 py-1 focus:outline-none focus:ring-1 focus:ring-[#6478a3]" />
+    </div>
+
+    <div class="mt-6 flex justify-center space-x-6">
+        <button type="submit" class="bg-[#6478a3] text-white font-bold py-2 px-6 w-[140px]">Login</button>
+        <a href="./sign_up.html" class="text-[#6478a3] font-semibold text-sm leading-5 self-center">Cadastre-se</a>
+    </div>
+    <div class="text-center text-[#6478a3] font-semibold text-sm leading-5 cursor-pointer mt-6">Esqueceu sua senha?</div>
+    </form>
+</body>
+</html>

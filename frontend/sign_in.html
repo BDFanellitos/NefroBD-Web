@@ -1,0 +1,52 @@
+<html lang="pt-BR" class="scroll-smooth" >
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>NefroBD</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="./JS/main.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
+    <style>
+    /* Custom scrollbar to hide it for a cleaner look */
+    ::-webkit-scrollbar {
+    display: none;
+        
+    }</style>
+</head>
+
+<body class="bg-[#2b2e3c] min-h-screen flex flex-col">
+    <!-- Top bar -->
+    <header class="flex justify-center items-center h-8 bg-[#f9f9f4] text-black font-semibold text-sm select-none">
+        NefroBD
+    </header>
+
+    <!-- Main content -->
+    <main class="flex-grow flex justify-center items-center">
+        <form class="bg-[#5f6f9e] p-8 w-[450px] max-w-full flex flex-col gap-4">
+        <div class="flex items-center justify-between">
+            <label for="username" class="text-[#f9f9f4] font-semibold w-[160px]">Nome de usuário</label>
+            <input id="username" type="text" class="border border-gray-300 rounded-sm px-2 py-1 w-[180px]" />
+        </div>
+        <div class="flex items-center justify-between">
+            <label for="email" class="text-[#f9f9f4] font-semibold w-[160px]">E-mail</label>
+            <input id="email" type="email" class="border border-gray-300 rounded-sm px-2 py-1 w-[180px]" />
+        </div>
+        <div class="flex items-center justify-between">
+            <label for="password" class="text-[#f9f9f4] font-semibold w-[160px]">Senha</label>
+            <input id="password" type="password" class="border border-gray-300 rounded-sm px-2 py-1 w-[180px]" />
+        </div>
+        <div class="flex items-center justify-between">
+            <label for="confirm-password" class="text-[#f9f9f4] font-semibold w-[160px]">Confirme a Senha</label>
+            <input id="confirm-password" type="password" class="border border-gray-300 rounded-sm px-2 py-1 w-[180px]" />
+        </div>
+
+        <button type="submit" class="mt-6 bg-[#f9f9f4] text-[#5f6f9e] font-semibold py-3 w-40 mx-auto rounded-sm hover:brightness-95 transition">
+            CONFIRMAR
+        </button>
+        <button type="button" class="mt-4 bg-[#f9f9f4] text-[#5f6f9e] font-semibold py-3 w-40 mx-auto rounded-sm hover:brightness-95 transition">
+            Voltar
+        </button>
+        </form>
+    </main>
+</body>
+</html>
