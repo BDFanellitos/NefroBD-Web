@@ -1,6 +1,5 @@
 Flask
 flask-cors
-sqlite3
 json
 csv
 StringIO
