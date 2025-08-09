@@ -193,4 +193,55 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     carregarTabelas();
+
+/* PONTO */    
+    async function registrarPonto() {
+        const usuario = document.getElementById('ponto_usuario').value;
+        const data = document.getElementById('ponto_data').value;
+        const entrada = document.getElementById('ponto_entrada').value;
+        const saida = document.getElementById('ponto_saida').value;
+
+        if (!usuario) {
+            alert('Usuário não está logado!');
+            return;
+        }
+        if (!data || !entrada) {
+            alert('Preencha ao menos a data e o horário de entrada.');
+            return;
+        }
+
+        const hoje = new Date().toISOString().split("T")[0];
+        if (data > hoje) {
+            alert('Não é permitido registrar ponto para datas futuras.');
+            return;
+        }
+
+        try {
+            const res = await fetch(`${BASE_URL}/api/ponto`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ usuario, data, entrada, saida })
+            });
+
+            const response = await res.json();
+
+            if (res.ok && response.status === 'success') {
+                alert('Ponto registrado com sucesso!');
+                fecharPopupPonto();
+            } else {
+                alert(response.message || 'Erro ao registrar ponto.');
+            }
+        } catch (error) {
+            alert('Erro na conexão com o servidor: ' + error);
+        }
+    }
+
+    // Função para fechar popup
+    function fecharPopupPonto() {
+        const popup = document.getElementById('popup_ponto');
+        popup.classList.add('hidden');
+        document.getElementById('ponto_entrada').value = '';
+        document.getElementById('ponto_saida').value = '';
+    }
+
 });
