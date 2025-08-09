@@ -1,0 +1,57 @@
+body{
+    font-family: 'Inter', sans-serif;
+    background-color: #282a36;
+    color: #f8f8f2;
+}
+/* Dracula theme colors */
+.drac-bg {
+    background-color: #44475a;
+}
+.drac-bg-dark {
+    background-color: #282a36;
+}
+.drac-text {
+    color: #f8f8f2;
+}
+.drac-text-muted {
+    color: #6272a4;
+}
+.drac-border {
+    border-color: #6272a4;
+}
+.drac-focus:ring {
+    --tw-ring-color: #50fa7b;
+}
+.drac-button-primary {
+    background-color: #50fa7b;
+    color: #282a36;
+}
+.drac-button-primary:hover {
+    background-color: #44e36f;
+}
+.drac-button-secondary {
+    background-color: transparent;
+    border-color: #6272a4;
+    color: #6272a4;
+}
+.drac-button-secondary:hover {
+    background-color: #6272a4;
+    color: #f8f8f2;
+}
+.drac-input {
+    background-color: #44475a;
+    border-color: #6272a4;
+    color: #f8f8f2;
+}
+.drac-input:focus {
+    outline: none;
+    border-color: #50fa7b;
+    box-shadow: 0 0 0 2px #50fa7b;
+    background-color: #44475a;
+    color: #f8f8f2;
+}
+/* Scrollbar for popup if needed */
+#registerPointPopup > div {
+    max-height: 90vh;
+    overflow-y: auto;
+}
