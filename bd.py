@@ -6,6 +6,8 @@ import datetime
 import os
 
 # Funções de conexão
+DB_PATH = os.path.join(os.path.dirname(__file__), "categorias.db")
+
 def conectar_usuarios():
     return sqlite3.connect('usuarios.db')
 
@@ -14,6 +16,40 @@ def conectar_estoque(categoria):
 
 def conectar_ponto():
     return sqlite3.connect('ponto.db')
+
+# Manipulação de tabelas com SQLite
+def conectar_categorias():
+    conn = sqlite3.connect(DB_PATH)
+    return conn
+
+def criar_tabela_categorias():
+    conn = conectar_categorias()
+    cur = conn.cursor()
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS categorias (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            table_name TEXT UNIQUE NOT NULL,
+            table_type TEXT NOT NULL
+        )
+    """)
+    conn.commit()
+    conn.close()
+
+def carregar_tabelas():
+    conn = conectar_categorias()
+    cur = conn.cursor()
+    cur.execute("SELECT table_name, table_type FROM categorias")
+    tabelas = [{"table_name": row[0], "table_type": row[1]} for row in cur.fetchall()]
+    conn.close()
+    return tabelas
+
+def salvar_tabela(nome, tipo):
+    conn = conectar_categorias()
+    cur = conn.cursor()
+    cur.execute("INSERT INTO categorias (table_name, table_type) VALUES (?, ?)", (nome, tipo))
+    conn.commit()
+    conn.close()
+
 
 # Funções de manipulação de tabelas
 def criar_tabela_usuarios():

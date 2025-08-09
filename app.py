@@ -5,14 +5,18 @@ import json
 import csv
 from io import StringIO
 from os import environ
+import os
 
+# Conexão persistente com SQLite
+DB_PATH = os.path.join(os.path.dirname(__file__), "categorias.db")
+# Flask App
 app = Flask(__name__)
-CORS(app)  
-
+CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 # Criar tabelas se não existirem
 bd.criar_tabela_usuarios()
 bd.criar_tabela_ponto()
+bd.criar_tabela_categorias()
 
 ## MANEJO DO USUÁRIO
 @app.route('/api/login', methods=['POST'])
@@ -40,25 +44,13 @@ def reset_password():
     return jsonify({'status': 'success'})
 
 ## MANEJO DE TABELAS
-def carregar_tabelas():
-    try:
-        with open("tabelas_criadas.json", "r") as f:
-            return json.load(f)
-    except FileNotFoundError:
-        return []
-
-def salvar_tabelas(lista):
-    with open("tabelas_criadas.json", "w") as f:
-        json.dump(lista, f, indent=4)
-
 @app.route('/api/criar_tabela', methods=['POST'])
 def criar_tabela():
     data = request.json
     nome = data['nome']
     tipo = data['tipo']
 
-    tabelas = carregar_tabelas()
-
+    tabelas = bd.carregar_tabelas()
     if any(t['table_name'].lower() == nome.lower() for t in tabelas):
         return jsonify({'status': 'error', 'message': 'Essa tabela já existe.'}), 400
 
@@ -67,14 +59,12 @@ def criar_tabela():
     else:
         bd.criar_tabelas_estoque(nome)
 
-    tabelas.append({"table_name": nome, "table_type": tipo})
-    salvar_tabelas(tabelas)
-
+    bd.salvar_tabela(nome, tipo)
     return jsonify({'status': 'success'})
 
 @app.route('/api/categorias', methods=['GET'])
 def listar_tabelas():
-    tabelas = carregar_tabelas()
+    tabelas = bd.carregar_tabelas()
     return jsonify({'tabelas': tabelas})
 
 ## PONTO
