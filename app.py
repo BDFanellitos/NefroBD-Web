@@ -1,18 +1,44 @@
-# app.py
 from flask import Flask, request, jsonify, Response, send_from_directory
 from flask_cors import CORS
 import bd as bd
 import csv
+import json
 from io import StringIO
 from os import environ
 
-app = Flask(__name__, static_folder='frontend', static_url_path='/')
+app = Flask(__name__)
 CORS(app, resources={r"/api/*": {"origins": "*"}})
 
-# garantir estruturas
+## garantir estruturas
 bd.criar_tabela_usuarios()
 bd.criar_tabela_ponto()
 bd.criar_tabela_categorias()
+
+## MANEJO DO USUÁRIO
+@app.route('/api/login', methods=['POST'])
+def login():
+    data = request.json
+    user = bd.autenticar_usuario(data['username'], data['senha'])
+    if user:
+        return jsonify({'status': 'success', 'user': user[1]})
+    return jsonify({'status': 'error', 'message': 'Usuário ou senha inválidos'}), 401
+
+@app.route('/api/register', methods=['POST'])
+def register():
+    data = request.json
+    success = bd.cadastrar_usuario(data['username'], data['email'], data['senha'])
+    if success:
+        return jsonify({'status': 'success'})
+    else:
+        return jsonify({'status': 'error', 'message': 'Usuário ou email já cadastrados'}), 409
+    
+@app.route('/api/reset_password', methods=['POST'])
+def reset_password():
+    data = request.json
+    if data['key_phrase'] != 'alohomora':
+        return jsonify({'status': 'error', 'message': 'Frase de segurança incorreta'}), 403
+    bd.redefinir_senha(data['email'], data['nova_senha'], data['key_phrase'])
+    return jsonify({'status': 'success'})
 
 # ----- LISTAR / CRIAR / DELETAR TABELAS -----
 @app.route('/api/tabelas', methods=['GET'])
@@ -195,10 +221,10 @@ def exportar_ponto():
     )
 
 
-# ---- static single-page serving (opcional) ----
+# ---- static single-page serving----
 @app.route('/')
 def index():
-    return send_from_directory('frontend', 'home.html')  # ajuste conforme estrutura
+    return send_from_directory('frontend', 'home.html')  
 
 if __name__ == '__main__':
     port = int(environ.get("PORT", 5000))
