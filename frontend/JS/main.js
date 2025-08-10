@@ -76,6 +76,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const email = document.getElementById('email').value.trim();
             const senha = document.getElementById('password').value;
             const confirmarSenha = document.getElementById('confirm-password').value;
+            const secure_psw = document.getElementById('security-word').value;
+
             if (!username || !email || !senha || !confirmarSenha) {
                 alert('Por favor, preencha todos os campos.');
                 return;
@@ -88,7 +90,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const res = await fetchWithTimeout(`${BASE_URL}/api/register`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username, email, senha })
+                    body: JSON.stringify({ username, email, senha, secure_psw})
                 });
                 const data = await res.json();
                 if (res.ok && data.status === 'success') {
@@ -482,15 +484,6 @@ document.addEventListener('DOMContentLoaded', () => {
             valid = false;
         } else {
             passwordError.classList.add('hidden');
-        }
-
-        // Validate security phrase (case insensitive)
-        if (securityPhrase.value.trim().toLowerCase() !== 'alohomora') {
-            phraseError.classList.remove('hidden');
-            if (valid) securityPhrase.focus();
-            valid = false;
-        } else {
-            phraseError.classList.add('hidden');
         }
 
         if (!valid) {

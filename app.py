@@ -86,16 +86,18 @@ def login():
 @app.route('/api/register', methods=['POST'])
 def register():
     data = request.json
+    token = data.get('secure_psw')
+    if token != os.environ.get("ADMIN_TOKEN"):
+        return jsonify({'status': 'error', 'message': 'Acesso negado'}), 403
+
     success = bd.cadastrar_usuario(data['username'], data['email'], data['senha'])
-    if success:
-        return jsonify({'status': 'success'})
-    else:
-        return jsonify({'status': 'error', 'message': 'Usuário ou email já cadastrados'}), 409
-    
+    return jsonify({'status': 'success' if success else 'error'})
+
+
 @app.route('/api/reset_password', methods=['POST'])
 def reset_password():
     data = request.json
-    if data['key_phrase'] != 'alohomora':
+    if data['key_phrase'] != os.environ.get("ADMIN_TOKEN"):
         return jsonify({'status': 'error', 'message': 'Frase de segurança incorreta'}), 403
     bd.redefinir_senha(data['email'], data['nova_senha'], data['key_phrase'])
     return jsonify({'status': 'success'})
