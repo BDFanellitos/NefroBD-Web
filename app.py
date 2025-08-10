@@ -91,6 +91,7 @@ def register():
         return jsonify({'status': 'error', 'message': 'Acesso negado'}), 403
 
     success = bd.cadastrar_usuario(data['username'], data['email'], data['senha'])
+    enviar_backup()
     return jsonify({'status': 'success' if success else 'error'})
 
 
@@ -100,6 +101,7 @@ def reset_password():
     if data['key_phrase'] != os.environ.get("ADMIN_TOKEN"):
         return jsonify({'status': 'error', 'message': 'Frase de segurança incorreta'}), 403
     bd.redefinir_senha(data['email'], data['nova_senha'], data['key_phrase'])
+    enviar_backup()
     return jsonify({'status': 'success'})
 
 # ----- LISTAR / CRIAR / DELETAR TABELAS -----
