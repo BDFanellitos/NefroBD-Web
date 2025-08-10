@@ -5,11 +5,71 @@ import csv
 import json
 from io import StringIO
 from os import environ
+import subprocess
+import os
 
 app = Flask(__name__)
 CORS(app, resources={r"/api/*": {"origins": "*"}})
 
-## garantir estruturas
+## download de tabelas
+def restaurar_bancos():
+    """Clona repositório privado com os .db e copia para a pasta atual."""
+    token = os.environ.get("GITHUB_TOKEN")
+    repo_url = os.environ.get("DB_REPO_URL")
+    if not token or not repo_url:
+        print("⚠️ Variáveis de ambiente GITHUB_TOKEN ou DB_REPO_URL não configuradas.")
+        return
+    
+    clone_dir = "/tmp/db_repo"
+    if os.path.exists(clone_dir):
+        subprocess.run(["rm", "-rf", clone_dir])
+
+    auth_url = repo_url.replace("https://", f"https://{token}@")
+
+    print("📥 Clonando repositório privado de bancos...")
+    subprocess.run(["git", "clone", auth_url, clone_dir], check=True)
+
+    # Copia todos os .db para o diretório atual
+    for file in os.listdir(clone_dir):
+        if file.endswith(".db"):
+            subprocess.run(["cp", os.path.join(clone_dir, file), file])
+            print(f"✅ Banco restaurado: {file}")
+
+
+def enviar_backup():
+    """Envia os .db atuais para o repositório privado no GitHub."""
+    token = os.environ.get("GITHUB_TOKEN")
+    repo_url = os.environ.get("DB_REPO_URL")
+    if not token or not repo_url:
+        print("⚠️ Variáveis de ambiente GITHUB_TOKEN ou DB_REPO_URL não configuradas.")
+        return
+    
+    clone_dir = "/tmp/db_repo"
+    if os.path.exists(clone_dir):
+        subprocess.run(["rm", "-rf", clone_dir])
+
+    auth_url = repo_url.replace("https://", f"https://{token}@")
+
+    print("📤 Clonando repositório privado para backup...")
+    subprocess.run(["git", "clone", auth_url, clone_dir], check=True)
+
+    # Copia todos os .db para o repositório
+    for file in os.listdir("."):
+        if file.endswith(".db"):
+            subprocess.run(["cp", file, os.path.join(clone_dir, file)])
+            print(f"🔄 Banco atualizado para backup: {file}")
+
+    # Commit e push
+    subprocess.run(["git", "-C", clone_dir, "add", "."], check=True)
+    subprocess.run(["git", "-C", clone_dir, "commit", "-m", "Backup automático"], check=False)
+    subprocess.run(["git", "-C", clone_dir, "push"], check=True)
+    print("✅ Backup enviado com sucesso para o GitHub.")
+
+
+# Executa a restauração antes de inicializar os bancos
+restaurar_bancos()
+
+# garantir estruturas
 bd.criar_tabela_usuarios()
 bd.criar_tabela_ponto()
 bd.criar_tabela_categorias()
@@ -220,11 +280,20 @@ def exportar_ponto():
         headers={'Content-Disposition': f'attachment; filename=ponto_{usuario}.csv'}
     )
 
+### BACKUP
+@app.route('/api/backup', methods=['POST'])
+def backup():
+    key = request.args.get('key')
+    if key != 'alohomora':
+        return jsonify({'status': 'error', 'message': 'Chave incorreta'}), 403
+    enviar_backup()
+    return jsonify({'status': 'success', 'message': 'Backup enviado com sucesso.'})
 
-# ---- static single-page serving----
+
+# ---- static single-page serving (opcional) ----
 @app.route('/')
 def index():
-    return send_from_directory('frontend', 'home.html')  
+    return send_from_directory('frontend', 'home.html')  # ajuste conforme estrutura
 
 if __name__ == '__main__':
     port = int(environ.get("PORT", 5000))
