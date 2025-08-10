@@ -1,0 +1,133 @@
+<html lang="pt-BR" class="scroll-smooth" style="scroll-behavior:smooth;">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>NefroBD</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="./JS/table_handler.js" defer></script>
+<script src="./JS/main.js" defer></script>
+<script>
+    tailwind.config = {
+    theme: {
+        extend: {
+            colors: {
+            dracullaBg: '#282a36',
+            dracullaCurrentLine: '#44475a',
+            dracullaForeground: '#f8f8f2',
+            dracullaComment: '#6272a4',
+            dracullaCyan: '#8be9fd',
+            dracullaGreen: '#50fa7b',
+            dracullaOrange: '#ffb86c',
+            dracullaPink: '#ff79c6',
+            dracullaPurple: '#bd93f9',
+            dracullaRed: '#ff5555',
+            dracullaYellow: '#f1fa8c',
+            dracullaButtonBg: '#44475a',
+            dracullaButtonHover: '#6272a4',
+            dracullaInputBg: '#44475a',
+            dracullaInputBorder: '#6272a4',
+            dracullaInputText: '#f8f8f2',
+            dracullaLabelText: '#8be9fd',
+            },
+            fontFamily: {
+            sans: ['"Fira Sans"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+            },
+        },
+        },
+    }
+</script>
+<link href="https://fonts.googleapis.com/css2?family=Fira+Sans&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="./CSS/style.css">
+</head>
+<body class="bg-dracullaBg font-sans text-[13px] leading-tight text-dracullaForeground min-h-screen flex flex-col">
+
+<!-- Form container -->
+<section class="max-w-4xl mx-auto mt-8 p-6 rounded-md select-none w-full sm:w-[720px] bg-dracullaCurrentLine shadow-lg">
+    <form class="grid grid-cols-12 gap-x-6 gap-y-6 items-center">
+        <!-- Left column inputs -->
+        <div class="col-span-5 grid grid-rows-4 gap-y-6">
+        <div class="flex items-center">
+            <label for="codigo" class="w-20 text-dracullaLabelText font-semibold text-[13px] leading-tight text-right pr-2 select-text">Código</label>
+            <input id="codigo" type="text" autocomplete="off" class="flex-1 bg-dracullaInputBg border border-dracullaInputBorder text-dracullaInputText h-9 px-3 text-[13px] leading-tight rounded-md focus:outline-none focus:ring-2 focus:ring-dracullaPurple" />
+        </div>
+        <div class="flex items-center">
+            <label for="alvo" class="w-20 text-dracullaLabelText font-semibold text-[13px] leading-tight text-right pr-2 select-text">Alvo</label>
+            <input id="alvo" type="text" autocomplete="off" class="flex-1 bg-dracullaInputBg border border-dracullaInputBorder text-dracullaInputText h-9 px-3 text-[13px] leading-tight rounded-md focus:outline-none focus:ring-2 focus:ring-dracullaPurple" />
+        </div>
+        <div class="flex items-center">
+            <label for="conjugado" class="w-20 text-dracullaLabelText font-semibold text-[13px] leading-tight text-right pr-2 select-text">Conjugado</label>
+            <input id="conjugado" type="text" autocomplete="off" class="flex-1 bg-dracullaInputBg border border-dracullaInputBorder text-dracullaInputText h-9 px-3 text-[13px] leading-tight rounded-md focus:outline-none focus:ring-2 focus:ring-dracullaPurple" />
+        </div>
+        <div class="flex items-center">
+            <label for="aliquotas" class="w-20 text-dracullaLabelText font-semibold text-[13px] leading-tight text-right pr-2 select-text">Alíquotas</label>
+            <input id="aliquotas" type="text" autocomplete="off" class="flex-1 bg-dracullaInputBg border border-dracullaInputBorder text-dracullaInputText h-9 px-3 text-[13px] leading-tight rounded-md focus:outline-none focus:ring-2 focus:ring-dracullaPurple" />
+        </div>
+        </div>
+
+        <!-- Middle column inputs -->
+        <div class="col-span-5 grid grid-rows-4 gap-y-6">
+        <div class="flex items-center">
+            <label for="nome" class="w-20 text-dracullaLabelText font-semibold text-[13px] leading-tight text-right pr-2 select-text">Nome</label>
+            <input id="nome" type="text" autocomplete="off" class="flex-1 bg-dracullaInputBg border border-dracullaInputBorder text-dracullaInputText h-9 px-3 text-[13px] leading-tight rounded-md focus:outline-none focus:ring-2 focus:ring-dracullaPurple" />
+        </div>
+        <div class="flex items-center">
+            <label for="host" class="w-20 text-dracullaLabelText font-semibold text-[13px] leading-tight text-right pr-2 select-text">Host</label>
+            <input id="host" type="text" autocomplete="off" class="flex-1 bg-dracullaInputBg border border-dracullaInputBorder text-dracullaInputText h-9 px-3 text-[13px] leading-tight rounded-md focus:outline-none focus:ring-2 focus:ring-dracullaPurple" />
+        </div>
+        <div class="flex items-center">
+            <label for="marca" class="w-20 text-dracullaLabelText font-semibold text-[13px] leading-tight text-right pr-2 select-text">Marca</label>
+            <input id="marca" type="text" autocomplete="off" class="flex-1 bg-dracullaInputBg border border-dracullaInputBorder text-dracullaInputText h-9 px-3 text-[13px] leading-tight rounded-md focus:outline-none focus:ring-2 focus:ring-dracullaPurple" />
+        </div>
+        <div class="flex items-center">
+            <label for="vials" class="w-20 text-dracullaLabelText font-semibold text-[13px] leading-tight text-right pr-2 select-text">Vials</label>
+            <input id="vials" type="text" autocomplete="off" class="flex-1 bg-dracullaInputBg border border-dracullaInputBorder text-dracullaInputText h-9 px-3 text-[13px] leading-tight rounded-md focus:outline-none focus:ring-2 focus:ring-dracullaPurple" />
+        </div>
+        </div>
+
+        <!-- Right column buttons -->
+        <div class="col-span-2 flex flex-col space-y-5">
+        <button type="button" id="add_btn" class="bg-dracullaPurple hover:bg-dracullaPink transition-colors text-dracullaBg font-semibold text-[13px] h-11 rounded-md shadow-md">Adicionar</button>
+        <button type="button" id="back_btn" class="bg-dracullaButtonBg hover:bg-dracullaButtonHover transition-colors text-dracullaForeground font-semibold text-[13px] h-12 rounded-md shadow-md">Voltar</button>
+        <button type="button" id="delete_btn" class="bg-dracullaButtonBg hover:bg-dracullaButtonHover transition-colors text-dracullaForeground font-semibold text-[13px] h-12 rounded-md shadow-md">Deletar</button>
+        <button type="button" id="export_btn" class="bg-dracullaButtonBg hover:bg-dracullaButtonHover transition-colors text-dracullaForeground font-semibold text-[13px] h-12 rounded-md shadow-md">Exportar</button>
+        </div>
+    </form>
+    </section>
+
+    <!-- Table container -->
+    <section class="flex-1 mt-6 px-2 overflow-auto scrollbar-thin w-full max-w-full mx-auto" style="min-width: 600px;">
+    <table id="data-table" class="w-full border border-dracullaInputBorder border-collapse text-[13px] leading-tight bg-dracullaCurrentLine text-dracullaForeground">
+        <thead>
+        <tr class="bg-dracullaButtonBg text-dracullaForeground font-bold select-none">
+            <th class="border border-dracullaInputBorder px-2 py-1 text-center whitespace-nowrap">ID</th>
+            <th class="border border-dracullaInputBorder px-2 py-1 text-center whitespace-nowrap">Código</th>
+            <th class="border border-dracullaInputBorder px-2 py-1 text-center whitespace-nowrap">Nome</th>
+            <th class="border border-dracullaInputBorder px-2 py-1 text-center whitespace-nowrap">Alvo</th>
+            <th class="border border-dracullaInputBorder px-2 py-1 text-center whitespace-nowrap">Host</th>
+            <th class="border border-dracullaInputBorder px-2 py-1 text-center whitespace-nowrap">Conjugado</th>
+            <th class="border border-dracullaInputBorder px-2 py-1 text-center whitespace-nowrap">Marca</th>
+            <th class="border border-dracullaInputBorder px-2 py-1 text-center whitespace-nowrap">Aliquotas</th>
+            <th class="border border-dracullaInputBorder px-2 py-1 text-center whitespace-nowrap">Vials</th>
+            <th class="border border-dracullaInputBorder px-2 py-1 text-center whitespace-nowrap">Última Modificação</th>
+            <th class="border border-dracullaInputBorder px-2 py-1 text-center whitespace-nowrap">Nome Usuário</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td class="border border-dracullaInputBorder px-2 py-1 text-center" data-field="id">1</td>
+            <td class="border border-dracullaInputBorder px-2 py-1" data-field="codigo">ABC123</td>
+            <td class="border border-dracullaInputBorder px-2 py-1" data-field="nome">Teste Nome</td>
+            <td class="border border-dracullaInputBorder px-2 py-1" data-field="alvo">Alvo X</td>
+            <td class="border border-dracullaInputBorder px-2 py-1" data-field="host">Host Y</td>
+            <td class="border border-dracullaInputBorder px-2 py-1" data-field="conjugado">Conjugado Z</td>
+            <td class="border border-dracullaInputBorder px-2 py-1" data-field="marca">Marca A</td>
+            <td class="border border-dracullaInputBorder px-2 py-1" data-field="aliquotas">10</td>
+            <td class="border border-dracullaInputBorder px-2 py-1" data-field="vials">5</td>
+            <td class="border border-dracullaInputBorder px-2 py-1" data-field="ultima_modificacao">2024-06-01</td>
+            <td class="border border-dracullaInputBorder px-2 py-1" data-field="nome_usuario">usuario1</td>
+        </tr>
+        </tbody>
+    </table>
+    </section>
+</body>
+</html>

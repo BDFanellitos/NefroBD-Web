@@ -108,7 +108,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-/* NOVA TABELA E CARREGAR TABELAS*/
+/* NOVA TABELA POPUP*/
 document.addEventListener("DOMContentLoaded", () => {
     const popup = document.getElementById('popup_nova_tabela');
     const listaTabelas = document.getElementById('lista_tabelas');
@@ -151,37 +151,9 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
     };
-    async function carregarTabelas() {
-        try {
-            listaTabelas.innerHTML = "<p style='color:blue'>Carregando tabelas...</p>";
-            const res = await fetchWithTimeout(`${BASE_URL}/api/categorias`);
-            const data = await res.json();
-            listaTabelas.innerHTML = '';
-            if (!data.tabelas || data.tabelas.length === 0) {
-                listaTabelas.innerHTML = "<p>Nenhuma tabela encontrada.</p>";
-                return;
-            }
-            data.tabelas.forEach(tabela => {
-                const btn = document.createElement('button');
-                btn.textContent = tabela.table_name;
-                btn.className = "bg-[#6170A0] text-white font-semibold py-14 rounded-md shadow-md text-sm";
-                btn.type = "button";
-                listaTabelas.appendChild(btn);
-            });
-        } catch (error) {
-            if (error.name === 'AbortError') {
-                listaTabelas.innerHTML = "<p style='color:red'>Servidor demorou para responder. Tente novamente.</p>";
-            } else {
-                listaTabelas.innerHTML = "<p style='color:red'>Erro ao carregar tabelas.</p>";
-                console.error(error);
-            }
-        }
-    }
-    carregarTabelas();
 });
 
 /* PONTO */
-// --- PONTO (versão compatível com seu HTML) ---
 document.addEventListener('DOMContentLoaded', () => {
     const openPopupBtn = document.getElementById('ponto_btn');
     const popup = document.getElementById('popup_novo_ponto');
@@ -415,3 +387,60 @@ document.addEventListener('DOMContentLoaded', () => {
 
 }); 
 
+/* TABELA ANTICORPO */
+document.addEventListener('DOMContentLoaded', () => {
+        const table = document.getElementById('data-table');
+        let editingTd = null;
+
+        table.addEventListener('dblclick', (event) => {
+        const target = event.target;
+        if (target.tagName !== 'TD') return;
+        if (editingTd) return; // Only one edit at a time
+
+        // Prevent editing ID column (first column)
+        if (target.cellIndex === 0) return;
+
+        editingTd = target;
+        const originalText = target.textContent;
+        const field = target.getAttribute('data-field') || '';
+
+        // Create input
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.value = originalText;
+        input.className = 'table-edit-input bg-dracullaInputBg border border-dracullaInputBorder text-dracullaInputText px-1 text-[13px] leading-tight rounded-md w-full';
+        input.style.height = '1.75rem'; // match row height approx
+        target.textContent = '';
+        target.appendChild(input);
+        input.focus();
+        input.select();
+
+        // Save function
+        function save() {
+            const newValue = input.value.trim();
+            if (newValue.length === 0) {
+            target.textContent = originalText;
+            } else {
+            target.textContent = newValue;
+            }
+            editingTd = null;
+        }
+
+        // Cancel function
+        function cancel() {
+            target.textContent = originalText;
+            editingTd = null;
+        }
+
+        input.addEventListener('blur', save);
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+            e.preventDefault();
+            save();
+            } else if (e.key === 'Escape') {
+            e.preventDefault();
+            cancel();
+            }
+        });
+        });
+});
