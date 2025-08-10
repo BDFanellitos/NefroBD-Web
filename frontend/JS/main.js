@@ -13,7 +13,7 @@ async function fetchWithTimeout(resource, options = {}, timeout = 15000) {
         });
         clearTimeout(id);
         return response;
-    } catch (error) {
+    } catch (error) {   
         clearTimeout(id);
         throw error;
     }
@@ -443,4 +443,118 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
         });
+});
+
+/*** RESET PASSWORDS **/
+document.addEventListener('DOMContentLoaded', () => {
+        const form = document.getElementById('passwordForm');
+        const email = document.getElementById('email');
+        const newPassword = document.getElementById('new-password');
+        const confirmPassword = document.getElementById('confirm-password');
+        const securityPhrase = document.getElementById('security-phrase');
+
+        const emailError = document.getElementById('emailError');
+        const passwordError = document.getElementById('passwordError');
+        const phraseError = document.getElementById('phraseError');
+
+        function validateEmail(email) {
+        // Simple email regex validation
+        const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return re.test(email);
+        }
+
+        form.addEventListener('submit', (e) => {
+        let valid = true;
+
+        // Validate email
+        if (!validateEmail(email.value.trim())) {
+            emailError.classList.remove('hidden');
+            valid = false;
+            email.focus();
+        } else {
+            emailError.classList.add('hidden');
+        }
+
+        // Validate passwords match
+        if (newPassword.value !== confirmPassword.value) {
+            passwordError.classList.remove('hidden');
+            if (valid) confirmPassword.focus();
+            valid = false;
+        } else {
+            passwordError.classList.add('hidden');
+        }
+
+        // Validate security phrase (case insensitive)
+        if (securityPhrase.value.trim().toLowerCase() !== 'alohomora') {
+            phraseError.classList.remove('hidden');
+            if (valid) securityPhrase.focus();
+            valid = false;
+        } else {
+            phraseError.classList.add('hidden');
+        }
+
+        if (!valid) {
+            e.preventDefault();
+        }
+        });
+
+        // Hide errors on input
+        email.addEventListener('input', () => {
+        if (!emailError.classList.contains('hidden')) {
+            emailError.classList.add('hidden');
+        }
+        });
+        newPassword.addEventListener('input', () => {
+        if (!passwordError.classList.contains('hidden')) {
+            passwordError.classList.add('hidden');
+        }
+        });
+        confirmPassword.addEventListener('input', () => {
+        if (!passwordError.classList.contains('hidden')) {
+            passwordError.classList.add('hidden');
+        }
+        });
+        securityPhrase.addEventListener('input', () => {
+        if (!phraseError.classList.contains('hidden')) {
+            phraseError.classList.add('hidden');
+        }
+        });
+});
+
+
+/*** FRASES */
+document.addEventListener('DOMContentLoaded', () => {
+const frases = [
+    "Onde a ciência encontra a organização… e o café mantém tudo funcionando.",
+    "Eu juro solenemente atualizar o banco de dados ✋",
+    "Cada dado armazenado é um passo para a próxima descoberta (e para a saúde mental).",
+    "Organizar hoje para publicar amanhã.",
+    "Ciência sem organização é só uma bagunça sofisticada.",
+    "Será que tem amostra? Mantenha o BD atualizado e você irá saber!",
+    "Levante a mão todo mundo que odeia fazer almoxarifado ✋",
+    "Se não atualizar o estoque, o reagente some, e a culpa é sua 👉",
+    "Se o estoque fosse um experimento, atualizar seria o controle positivo!",
+    "Se você não quer congelar no freezer, melhor atualizar o estoque!",
+    "Reagente em falta? Culpa do estoque preguiçoso (ou do último que esqueceu de atualizar)."
+    ];
+
+    // Escolhe uma frase aleatória
+    const fraseAleatoria = frases[Math.floor(Math.random() * frases.length)];
+
+    // Função para simular digitação
+    function escreverTexto(elemento, texto, delay = 50) {
+    let i = 0;
+    function digitar() {
+        if (i < texto.length) {
+        elemento.textContent += texto.charAt(i);
+        i++;
+        setTimeout(digitar, delay);
+        }
+    }
+    digitar();
+    }
+
+// Executa
+const elementoFrase = document.getElementsByClassName("typewriter")[0];
+escreverTexto(elementoFrase, fraseAleatoria, 50); // 50ms por letra
 });

@@ -1,34 +1,82 @@
 <html lang="pt-BR" class="scroll-smooth" style="scroll-behavior:smooth;">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>NefroBD Login</title>
-<script src="./JS/main.js"></script>
-<script src="https://cdn.tailwindcss.com"></script>
-
-<style>
-  /* Custom scrollbar hidden for cleaner look */
-::-webkit-scrollbar {
-    display: none;
-}
-
-</style>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>NefroBD Login</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="./JS/main.js" defer></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@600&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"/>
+    <link rel="stylesheet" href="./CSS/style.css">
 </head>
-<body class="bg-[#6478a3] min-h-screen flex items-center justify-center font-sans">
-    <form id="login_form" class="bg-[#f7f7f2] p-8 w-[420px] max-w-full rounded-none" action="#">
-    <div class="grid grid-cols-[140px_1fr] gap-x-4 gap-y-6 items-center text-[#6478a3] font-semibold text-sm leading-5">
-        <label for="username" class="text-right">NOME DE USUÁRIO</label>
-        <input id="username_login" name="username" type="text" class="border border-gray-300 px-2 py-1 focus:outline-none focus:ring-1 focus:ring-[#6478a3]" />
+<body>
 
-        <label for="password" class="text-right">SENHA</label>
-        <input id="username_password" name="password" type="password" class="border border-gray-300 px-2 py-1 focus:outline-none focus:ring-1 focus:ring-[#6478a3]" />
+    <div class="typewriter fixed top-6 w-full text-center font-semibold text-xl text-purple-400"></div>
+    
+    <div class="drac-bg-dark min-h-screen flex justify-center items-center p-4">
+    <div class="background-shine rounded-md shadow-lg">
+        <form id="login_form" class="drac-bg p-8 w-full max-w-md rounded-md relative z-20">
+            <div class="grid grid-cols-[140px_1fr] gap-y-6 gap-x-6 items-center font-semibold text-[14px] leading-[18px]">
+                
+                <label for="username_login" class="text-right select-none drac-text">
+                    NOME DE USUÁRIO
+                </label>
+                <input
+                    id="username_login"
+                    name="username"
+                    type="text"
+                    class="drac-input rounded-md h-10 px-3 placeholder-drac-text-muted w-full max-w-[220px]"
+                    placeholder="Digite seu usuário"
+                    autocomplete="username"
+                />
+                
+                <label for="username_password" class="text-right select-none drac-text">
+                    SENHA
+                </label>
+                <input
+                    id="username_password"
+                    name="password"
+                    type="password"
+                    class="drac-input rounded-md h-10 px-3 placeholder-drac-text-muted w-full max-w-[220px]"
+                    placeholder="Digite sua senha"
+                    autocomplete="current-password"
+                />
+                
+                <div></div>
+                <div class="col-span-2 flex justify-center items-center space-x-8">
+                    <button
+                        type="submit"
+                        class="drac-button-primary font-semibold text-[16px] leading-[22px] px-10 py-3 rounded-md shadow-md min-w-[140px]"
+                    >
+                        Login
+                    </button>
+                    <a
+                        href="./sign_up.html"
+                        class="drac-text font-semibold text-[14px] leading-[18px] hover:drac-button-secondary transition-colors duration-200"
+                    >
+                        Cadastre-se
+                    </a>
+                </div>
+                
+                <div></div>
+                <div class="text-center drac-text font-semibold text-[14px] leading-[18px] col-span-2 cursor-pointer select-text hover:drac-text-muted transition-colors duration-200">
+                    <a href="./forgot_psw.html">Esqueceu sua senha?</a>
+                </div>
+            </div>
+        </form>
     </div>
 
-    <div class="mt-6 flex justify-center space-x-6">
-        <button type="submit" class="bg-[#6478a3] text-white font-bold py-2 px-6 w-[140px]">Login</button>
-        <a href="./sign_up.html" class="text-[#6478a3] font-semibold text-sm leading-5 self-center">Cadastre-se</a>
+    <div class="cursor-follower" id="cursorFollower"></div>
     </div>
-    <div class="text-center text-[#6478a3] font-semibold text-sm leading-5 cursor-pointer mt-6">Esqueceu sua senha?</div>
-    </form>
+
+    <script>
+        const cursorFollower = document.getElementById('cursorFollower');
+        window.addEventListener('mousemove', (e) => {
+            const x = e.clientX;
+            const y = e.clientY;
+            cursorFollower.style.transform = `translate(${x}px, ${y}px) translate(-50%, -50%)`;
+        });
+    </script>
 </body>
 </html>

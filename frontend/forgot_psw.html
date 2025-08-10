@@ -1,0 +1,87 @@
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>NefroBD</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="./JS/main.js" defer></script>
+    <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"/>
+    <link rel="stylesheet" href="./CSS/style.css">
+</head>
+<body class="bg-[color:var(--drac-bg)] min-h-screen flex justify-center items-center p-6">
+    <form
+        id="passwordForm"
+        class="bg-[color:var(--drac-current-line)] p-8 w-full max-w-md rounded-lg shadow-lg"
+        autocomplete="off"
+        novalidate
+    >
+        <div class="grid grid-cols-1 sm:grid-cols-[140px_1fr] gap-y-6 gap-x-6 text-[color:var(--drac-foreground)] font-semibold text-sm items-center">
+        <label for="email" class="text-left sm:text-right">E-mail</label>
+        <input
+            id="email"
+            type="email"
+            class="border border-[color:var(--drac-purple)] rounded-lg px-4 py-2 bg-[color:var(--drac-bg)] text-[color:var(--drac-foreground)] placeholder:text-[color:var(--drac-current-line)] focus:outline-none focus:ring-2 focus:ring-[color:var(--drac-purple)] w-full sm:w-auto transition"
+            placeholder="Digite seu e-mail"
+            autocomplete="off"
+            required
+        />
+        <p id="emailError" class="sm:col-span-2 text-[color:var(--drac-red)] text-xs font-semibold hidden">
+            Por favor, insira um e-mail válido.
+        </p>
+
+        <label for="new-password" class="text-left sm:text-right">Nova senha</label>
+        <input
+            id="new-password"
+            type="password"
+            class="border border-[color:var(--drac-purple)] rounded-lg px-4 py-2 bg-[color:var(--drac-bg)] text-[color:var(--drac-foreground)] placeholder:text-[color:var(--drac-current-line)] focus:outline-none focus:ring-2 focus:ring-[color:var(--drac-purple)] w-full sm:w-auto transition"
+            placeholder="Digite a nova senha"
+            autocomplete="new-password"
+            required
+        />
+
+        <label for="confirm-password" class="text-left sm:text-right">Confirme a nova senha</label>
+        <input
+            id="confirm-password"
+            type="password"
+            class="border border-[color:var(--drac-purple)] rounded-lg px-4 py-2 bg-[color:var(--drac-bg)] text-[color:var(--drac-foreground)] placeholder:text-[color:var(--drac-current-line)] focus:outline-none focus:ring-2 focus:ring-[color:var(--drac-purple)] w-full sm:w-auto transition"
+            placeholder="Confirme a nova senha"
+            autocomplete="new-password"
+            required
+        />
+        <p id="passwordError" class="sm:col-span-2 text-[color:var(--drac-red)] text-xs font-semibold hidden">
+            As senhas não coincidem.
+        </p>
+
+        <label for="security-phrase" class="text-left sm:text-right">Frase de segurança</label>
+        <input
+            id="security-phrase"
+            type="text"
+            class="border border-[color:var(--drac-purple)] rounded-lg px-4 py-2 bg-[color:var(--drac-bg)] text-[color:var(--drac-foreground)] placeholder:text-[color:var(--drac-current-line)] focus:outline-none focus:ring-2 focus:ring-[color:var(--drac-purple)] w-full sm:w-auto transition"
+            placeholder="Digite sua frase de segurança"
+            autocomplete="off"
+            required
+        />
+        <p id="phraseError" class="sm:col-span-2 text-[color:var(--drac-red)] text-xs font-semibold hidden">
+            A frase de segurança está incorreta.
+        </p>
+        </div>
+
+        <div class="mt-10 flex flex-col sm:flex-row justify-between gap-5 sm:gap-0">
+        <button
+            type="button"
+            class="bg-[color:var(--drac-purple)] hover:bg-[color:var(--drac-pink)] text-[color:var(--drac-bg)] font-semibold px-10 py-3 rounded-lg shadow-md transition"
+        >
+            <a href="./index.html">Voltar</a>
+        </button>
+        <button
+            type="submit"
+            class="bg-[color:var(--drac-green)] hover:bg-[color:var(--drac-yellow)] text-[color:var(--drac-bg)] font-semibold px-10 py-3 rounded-lg shadow-md transition"
+        >
+            CONFIRMAR
+        </button>
+        </div>
+    </form>
+</body>
+</html>
