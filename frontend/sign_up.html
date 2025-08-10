@@ -1,90 +1,48 @@
-<html lang="pt-BR" class="scroll-smooth" style="scroll-behavior:smooth;">
+<html lang="pt-BR">
 <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta charset="UTF-8" />
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="./JS/main.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>NefroBD</title>
-    <link
-    rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
-    />
-<style>
-    /* Custom scrollbar to hide it for a cleaner look */
-::-webkit-scrollbar {
-    display: none;
-}
-    body {
-      -ms-overflow-style: none; /* IE and Edge */
-      scrollbar-width: none; /* Firefox */
-}
-</style>
-
+    <link rel="stylesheet" href="./CSS/style.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="./JS/main.js" defer></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fira+Code&display=swap');
+    </style>
 </head>
-<body class="bg-[#2b2e3c] m-0 p-0 min-h-screen flex flex-col">
-
-<!-- Centered form container -->
-    <main class="flex-grow flex justify-center items-center">
-    <form
-        id="sign_up_form"
-        class="bg-[#5f6f9e] p-8 w-[450px] max-w-full"
-        aria-label="Formulário de cadastro"
-        autocomplete="off"
-    >
-    <div class="grid grid-cols-[auto_1fr] gap-x-4 gap-y-6 items-center text-[#f9f9f4] font-semibold text-[14px] leading-[20px]">
-        <label for="username" class="text-right">Nome de usuário</label>
-        <input
-            id="username"
-            name="username"
-            type="text"
-            class="border border-gray-300 rounded-sm px-2 py-1 text-black text-[14px] leading-[20px]"
-            autocomplete="username"
-        />
-
-        <label for="email" class="text-right">E-mail</label>
-        <input
-            id="email"
-            name="email"
-            type="email"
-            class="border border-gray-300 rounded-sm px-2 py-1 text-black text-[14px] leading-[20px]"
-            autocomplete="email"
-        />
-
-        <label for="password" class="text-right">Senha</label>
-        <input
-            id="password"
-            name="password"
-            type="password"
-            class="border border-gray-300 rounded-sm px-2 py-1 text-black text-[14px] leading-[20px]"
-            autocomplete="new-password"
-        />
-
-        <label for="confirm-password" class="text-right">Confirme a Senha</label>
-        <input
-            id="confirm-password"
-            name="confirm-password"
-            type="password"
-            class="border border-gray-300 rounded-sm px-2 py-1 text-black text-[14px] leading-[20px]"
-            autocomplete="new-password"
-        />
-    </div>
-
-    <div class="mt-10 flex flex-col space-y-6 items-center">
-        <button
-            type="submit"
-            class="bg-[#f9f9f4] text-[#5f6f9e] font-semibold text-[14px] leading-[20px] px-10 py-3 w-[160px] hover:bg-[#e6e6e1] focus:outline-none text-center"
-            >
+<body class="bg-[#282a36] flex items-center justify-center min-h-screen font-sans" style="font-family: 'Fira Code', monospace;">
+    <div class="bg-[#44475a] p-8 sm:p-10 w-full max-w-md sm:max-w-lg rounded-lg shadow-lg border border-[#6272a4] mx-4">
+        <form id="sign_up_form" class="space-y-6">
+        <div class="flex flex-col sm:flex-row sm:items-center">
+            <label for="username" class="text-[#f8f8f2] text-sm sm:w-40 font-semibold mb-1 sm:mb-0">Nome de usuário</label>
+            <input id="username" type="text" class="flex-1 h-8 sm:h-10 px-3 rounded-lg bg-[#6272a4] text-[#f8f8f2] placeholder-[#bd93f9] border border-[#6272a4] focus:outline-none focus:ring-2 focus:ring-[#50fa7b]" placeholder="Digite seu nome" />
+        </div>
+        <div class="flex flex-col sm:flex-row sm:items-center">
+            <label for="email" class="text-[#f8f8f2] text-sm sm:w-40 font-semibold mb-1 sm:mb-0">E-mail</label>
+            <input id="email" type="email" class="flex-1 h-8 sm:h-10 px-3 rounded-lg bg-[#6272a4] text-[#f8f8f2] placeholder-[#bd93f9] border border-[#6272a4] focus:outline-none focus:ring-2 focus:ring-[#50fa7b]" placeholder="exemplo@email.com" />
+        </div>
+        <div class="flex flex-col sm:flex-row sm:items-center">
+            <label for="password" class="text-[#f8f8f2] text-sm sm:w-40 font-semibold mb-1 sm:mb-0">Senha</label>
+            <input id="password" type="password" class="flex-1 h-8 sm:h-10 px-3 rounded-lg bg-[#6272a4] text-[#f8f8f2] placeholder-[#bd93f9] border border-[#6272a4] focus:outline-none focus:ring-2 focus:ring-[#50fa7b]" placeholder="********" />
+        </div>
+        <div class="flex flex-col sm:flex-row sm:items-center">
+            <label for="confirm-password" class="text-[#f8f8f2] text-sm sm:w-40 font-semibold mb-1 sm:mb-0">Confirme a Senha</label>
+            <input id="confirm-password" type="password" class="flex-1 h-8 sm:h-10 px-3 rounded-lg bg-[#6272a4] text-[#f8f8f2] placeholder-[#bd93f9] border border-[#6272a4] focus:outline-none focus:ring-2 focus:ring-[#50fa7b]" placeholder="********" />
+        </div>
+        <div class="flex flex-col sm:flex-row sm:items-center">
+            <label for="security-word" class="text-[#f8f8f2] text-sm sm:w-40 font-semibold mb-1 sm:mb-0">Palavra de segurança</label>
+            <input id="security-word" type="text" class="flex-1 h-8 sm:h-10 px-3 rounded-lg bg-[#6272a4] text-[#f8f8f2] placeholder-[#bd93f9] border border-[#6272a4] focus:outline-none focus:ring-2 focus:ring-[#50fa7b]" placeholder="Palavra secreta" />
+        </div>
+        <div class="flex flex-col items-center space-y-4 mt-6 sm:flex-row sm:justify-center sm:space-x-6 sm:space-y-0">
+            <button
+            type="submit"class="bg-[color:var(--drac-green)] hover:bg-[color:var(--drac-yellow)] text-[color:var(--drac-bg)] font-semibold px-10 py-3 rounded-lg shadow-md transition">
             CONFIRMAR
-        </button>
-
-        
-        <a href="./index.html" class="bg-[#f9f9f4] text-[#5f6f9e] font-semibold text-[14px] leading-[20px] px-10 py-3 w-[160px] hover:bg-[#e6e6e1] focus:outline-none text-center">
-            VOLTAR
-        </a>
-
+            </button>
+            <button type="button" class="bg-[color:var(--drac-purple)] hover:bg-[color:var(--drac-pink)] text-[color:var(--drac-bg)] font-semibold px-10 py-3 rounded-lg shadow-md transition">
+                <a href="./index.html">Voltar</a>
+            </button>
+        </div>
+        </form>
     </div>
-    </form>
-    </main>
 </body>
 </html>
-
