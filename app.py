@@ -288,7 +288,7 @@ def exportar_ponto():
 @app.route('/api/backup', methods=['POST'])
 def backup():
     key = request.args.get('key')
-    if key != 'alohomora':
+    if key != os.environ.get("ADMIN_TOKEN"):
         return jsonify({'status': 'error', 'message': 'Chave incorreta'}), 403
     enviar_backup()
     return jsonify({'status': 'success', 'message': 'Backup enviado com sucesso.'})

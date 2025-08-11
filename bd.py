@@ -101,6 +101,7 @@ def cadastrar_usuario(username, email, senha):
     except sqlite3.IntegrityError:
         return False
     finally:
+        conn.commit()
         conn.close()
 
 def hash_senha(senha):
