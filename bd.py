@@ -12,6 +12,9 @@ import base64
 # ==============================
 USE_MEMORY_DB = True
 DB_FILE_PATH = "usuarios.db"
+USE_MEMORY_PONTO = True
+PONTO_DB_FILE = "ponto.db"
+
 
 # Configuração para salvar no GitHub
 GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")  
@@ -33,7 +36,12 @@ def conectar_estoque(categoria):
     return sqlite3.connect(f"{categoria}_estoque.db")
 
 def conectar_ponto():
-    return sqlite3.connect("ponto.db")
+    if USE_MEMORY_PONTO:
+        conn = sqlite3.connect(":memory:")
+        carregar_dados_ponto_do_arquivo(conn)
+        return conn
+    else:
+        return sqlite3.connect(PONTO_DB_FILE)
 
 # ==============================
 # GitHub Sync
@@ -103,6 +111,38 @@ def salvar_dados_no_arquivo(conn_memory):
         return True
     except Exception as e:
         print(f"Erro ao salvar dados no arquivo: {e}")
+        return False
+
+def carregar_dados_ponto_do_arquivo(conn_memory):
+    if os.path.exists(PONTO_DB_FILE):
+        try:
+            conn_file = sqlite3.connect(PONTO_DB_FILE)
+            conn_file.backup(conn_memory)
+            conn_file.close()
+            print(f"Dados carregados do arquivo {PONTO_DB_FILE} para memória")
+        except Exception as e:
+            print(f"Erro ao carregar dados do ponto.db: {e}")
+
+def salvar_dados_ponto_no_arquivo(conn_memory):
+    try:
+        conn_file = sqlite3.connect(PONTO_DB_FILE)
+        cursor_file = conn_file.cursor()
+        # Cria tabela se não existir
+        cursor_file.execute("""
+        CREATE TABLE IF NOT EXISTS ponto (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            nome_usuario TEXT NOT NULL,
+            data TEXT NOT NULL,
+            hora_entrada TEXT NOT NULL,
+            hora_saida TEXT
+        )
+        """)
+        conn_memory.backup(conn_file)
+        conn_file.close()
+        print(f"Dados do ponto salvos no arquivo {PONTO_DB_FILE}")
+        return True
+    except Exception as e:
+        print(f"Erro ao salvar dados do ponto no arquivo: {e}")
         return False
 
 
@@ -349,9 +389,14 @@ def criar_tabela_ponto():
 def registrar_ponto(nome_usuario, data, hora_entrada, hora_saida=None):
     conn = conectar_ponto()
     cursor = conn.cursor()
-    cursor.execute("INSERT INTO ponto (nome_usuario, data, hora_entrada, hora_saida) VALUES (?, ?, ?, ?)", (nome_usuario, data, hora_entrada, hora_saida))
+    cursor.execute("INSERT INTO ponto (nome_usuario, data, hora_entrada, hora_saida) VALUES (?, ?, ?, ?)",
+                (nome_usuario, data, hora_entrada, hora_saida))
     conn.commit()
+    if USE_MEMORY_PONTO:
+        salvar_dados_ponto_no_arquivo(conn)
+        commit_to_github(PONTO_DB_FILE, "Novo registro de ponto")
     conn.close()
+
 
 def obter_pontos_usuario(nome_usuario):
     conn = conectar_ponto()
