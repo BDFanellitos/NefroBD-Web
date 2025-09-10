@@ -15,7 +15,7 @@ DB_FILE_PATH = "usuarios.db"
 
 # Configuração para salvar no GitHub
 GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")  
-REPO = "https://github.com/BDFanellitos/Nefro_data"      
+REPO = "BDFanellitos/Nefro_data"    
 BRANCH = "main"                          
 
 # ==============================
@@ -87,7 +87,16 @@ def carregar_dados_do_arquivo(conn_memory):
 def salvar_dados_no_arquivo(conn_memory):
     try:
         conn_file = sqlite3.connect(DB_FILE_PATH)
-        conn_file.execute("DELETE FROM usuarios")
+        cursor_file = conn_file.cursor()
+        # Cria tabela se não existir
+        cursor_file.execute("""
+        CREATE TABLE IF NOT EXISTS usuarios (
+            id TEXT PRIMARY KEY,
+            username TEXT UNIQUE NOT NULL,
+            email TEXT UNIQUE NOT NULL,
+            senha TEXT NOT NULL
+        )
+        """)
         conn_memory.backup(conn_file)
         conn_file.close()
         print(f"Dados salvos no arquivo {DB_FILE_PATH}")
@@ -95,6 +104,7 @@ def salvar_dados_no_arquivo(conn_memory):
     except Exception as e:
         print(f"Erro ao salvar dados no arquivo: {e}")
         return False
+
 
 # ==============================
 # Funções de manipulação de tabelas
