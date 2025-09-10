@@ -4,8 +4,14 @@ import string
 import hashlib
 import datetime
 import os
+import json
+from pathlib import Path
 
 BASE_DIR = os.path.dirname(__file__)
+
+# Configuração - usar memória como primary, arquivo como backup
+USE_MEMORY_DB = True
+DB_FILE_PATH = 'usuarios.db'
 
 # DB paths
 CATEGORIAS_DB = os.path.join(BASE_DIR, "categorias.db")
@@ -14,7 +20,14 @@ PONTO_DB = os.path.join(BASE_DIR, "ponto.db")
 
 # Funções de conexão
 def conectar_usuarios():
-    return sqlite3.connect(USUARIOS_DB)
+    if USE_MEMORY_DB:
+        # Database em memória
+        conn = sqlite3.connect(':memory:')
+        # Carregar dados do arquivo se existir
+        carregar_dados_do_arquivo(conn)
+        return conn
+    else:
+        return sqlite3.connect(DB_FILE_PATH)
 
 def conectar_estoque(categoria):
     # cria db por categoria no mesmo diretório
@@ -73,6 +86,40 @@ def remover_categoria(nome):
 
 
 # --- USUÁRIOS ---
+def carregar_dados_do_arquivo(conn_memory):
+    """Carrega dados do arquivo físico para a memória"""
+    if os.path.exists(DB_FILE_PATH):
+        try:
+            # Conectar ao arquivo físico
+            conn_file = sqlite3.connect(DB_FILE_PATH)
+            
+            # Copiar dados para memória
+            conn_file.backup(conn_memory)
+            
+            conn_file.close()
+            print(f"Dados carregados do arquivo {DB_FILE_PATH} para memória")
+        except Exception as e:
+            print(f"Erro ao carregar dados do arquivo: {e}")
+
+def salvar_dados_no_arquivo(conn_memory):
+    """Salva dados da memória para o arquivo físico"""
+    try:
+        # Conectar ao arquivo físico
+        conn_file = sqlite3.connect(DB_FILE_PATH)
+        
+        # Limpar arquivo atual
+        conn_file.execute('DELETE FROM usuarios')
+        
+        # Copiar dados da memória para arquivo
+        conn_memory.backup(conn_file)
+        
+        conn_file.close()
+        print(f"Dados salvos no arquivo {DB_FILE_PATH}")
+        return True
+    except Exception as e:
+        print(f"Erro ao salvar dados no arquivo: {e}")
+        return False
+
 def criar_tabela_usuarios():
     conn = conectar_usuarios()
     cursor = conn.cursor()
@@ -84,7 +131,11 @@ def criar_tabela_usuarios():
         senha TEXT NOT NULL
     )
     ''')
-    conn.commit()
+    
+    # Salvar estrutura no arquivo físico também
+    if USE_MEMORY_DB:
+        salvar_dados_no_arquivo(conn)
+    
     conn.close()
 
 def gerar_id_unico():
@@ -94,14 +145,34 @@ def cadastrar_usuario(username, email, senha):
     conn = conectar_usuarios()
     cursor = conn.cursor()
     user_id = gerar_id_unico()
+    
     try:
-        cursor.execute('INSERT INTO usuarios (id, username, email, senha) VALUES (?, ?, ?, ?)', (user_id, username, email, hash_senha(senha)))
+        # Validar entradas
+        if not username or not email or not senha:
+            return {'success': False, 'error': 'Todos os campos são obrigatórios'}
+        
+        cursor.execute('INSERT INTO usuarios (id, username, email, senha) VALUES (?, ?, ?, ?)', 
+                    (user_id, username, email, hash_senha(senha)))
         conn.commit()
-        return True
-    except sqlite3.IntegrityError:
-        return False
+        
+        # Salvar automaticamente no arquivo físico
+        if USE_MEMORY_DB:
+            salvar_dados_no_arquivo(conn)
+        
+        return {'success': True}
+        
+    except sqlite3.IntegrityError as e:
+        error_msg = str(e)
+        if 'username' in error_msg:
+            return {'success': False, 'error': 'Nome de usuário já existe'}
+        elif 'email' in error_msg:
+            return {'success': False, 'error': 'Email já cadastrado'}
+        else:
+            return {'success': False, 'error': 'Erro de integridade do banco de dados'}
+            
+    except Exception as e:
+        return {'success': False, 'error': f'Erro interno: {str(e)}'}
     finally:
-        conn.commit()
         conn.close()
 
 def hash_senha(senha):
@@ -112,10 +183,18 @@ def autenticar_usuario(username, senha):
         return None
     conn = conectar_usuarios()
     cursor = conn.cursor()
-    cursor.execute('SELECT * FROM usuarios WHERE username = ? AND senha = ?', (username, hash_senha(senha)))
+    cursor.execute('SELECT * FROM usuarios WHERE username = ? AND senha = ?', 
+                (username, hash_senha(senha)))
     user = cursor.fetchone()
     conn.close()
     return user
+# Adicionar função para sincronização manual
+def sincronizar_usuarios():
+    """Sincroniza dados entre memória e arquivo"""
+    conn = conectar_usuarios()
+    resultado = salvar_dados_no_arquivo(conn)
+    conn.close()
+    return resultado
 
 def redefinir_senha(email, nova_senha, key_phrase):
     conn = conectar_usuarios()

@@ -11,7 +11,42 @@ import os
 app = Flask(__name__)
 CORS(app, resources={r"/api/*": {"origins": "*"}})
 
+with app.app_context():
+    bd.criar_tabela_usuarios()
+    bd.criar_tabela_ponto()
+    print("Tabelas inicializadas com sucesso")
+
 ## download de tabelas
+@app.route('/api/sincronizar', methods=['POST'])
+def sincronizar():
+    """Endpoint para sincronização manual"""
+    try:
+        success = bd.sincronizar_usuarios()
+        if success:
+            return jsonify({'status': 'success', 'message': 'Dados sincronizados com sucesso'})
+        else:
+            return jsonify({'status': 'error', 'message': 'Erro ao sincronizar dados'}), 500
+    except Exception as e:
+        return jsonify({'status': 'error', 'message': f'Erro: {str(e)}'}), 500
+@app.route('/api/estado', methods=['GET'])
+
+def estado_db():
+    """Endpoint para verificar estado do database"""
+    try:
+        conn = bd.conectar_usuarios()
+        cursor = conn.cursor()
+        cursor.execute('SELECT COUNT(*) FROM usuarios')
+        count = cursor.fetchone()[0]
+        conn.close()
+        
+        return jsonify({
+            'status': 'success', 
+            'usuarios_count': count,
+            'modo_memoria': bd.USE_MEMORY_DB
+        })
+    except Exception as e:
+        return jsonify({'status': 'error', 'message': str(e)}), 500
+
 def restaurar_bancos():
     """Clona repositório privado com os .db e copia para a pasta atual."""
     token = os.environ.get("GITHUB_TOKEN")
