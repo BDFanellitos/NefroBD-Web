@@ -78,6 +78,39 @@ def commit_to_github(file_path=DB_FILE_PATH, message="Atualização de usuarios.
     else:
         print("❌ Erro ao atualizar no GitHub:", r.text)
         return False
+    
+def commit_ponto_to_github(file_path=PONTO_DB_FILE, message="Atualização de ponto.db"):
+    if not GITHUB_TOKEN:
+        print("⚠️ GITHUB_TOKEN não encontrado. Skippando upload para o GitHub.")
+        return False
+
+    url = f"https://api.github.com/repos/{REPO}/contents/{file_path}"
+
+    with open(file_path, "rb") as f:
+        content = base64.b64encode(f.read()).decode("utf-8")
+
+    # Verifica se já existe no GitHub
+    r = requests.get(url, headers={"Authorization": f"token {GITHUB_TOKEN}"})
+    sha = None
+    if r.status_code == 200:
+        sha = r.json()["sha"]
+
+    data = {
+        "message": message,
+        "content": content,
+        "branch": BRANCH,
+    }
+    if sha:
+        data["sha"] = sha
+
+    r = requests.put(url, json=data, headers={"Authorization": f"token {GITHUB_TOKEN}"})
+    if r.status_code in (200, 201):
+        print("✅ ponto.db atualizado no GitHub com sucesso")
+        return True
+    else:
+        print("❌ Erro ao atualizar no GitHub:", r.text)
+        return False
+
 
 # ==============================
 # Operações com banco em memória
@@ -384,25 +417,39 @@ def criar_tabela_ponto():
     )
     """)
     conn.commit()
+    if USE_MEMORY_PONTO:
+        salvar_dados_ponto_no_arquivo(conn)
+        commit_ponto_to_github(PONTO_DB_FILE, "Tabela ponto criada")
     conn.close()
 
 def registrar_ponto(nome_usuario, data, hora_entrada, hora_saida=None):
     conn = conectar_ponto()
     cursor = conn.cursor()
-    cursor.execute("INSERT INTO ponto (nome_usuario, data, hora_entrada, hora_saida) VALUES (?, ?, ?, ?)",
-                (nome_usuario, data, hora_entrada, hora_saida))
+    cursor.execute(
+        "INSERT INTO ponto (nome_usuario, data, hora_entrada, hora_saida) VALUES (?, ?, ?, ?)",
+        (nome_usuario, data, hora_entrada, hora_saida)
+    )
     conn.commit()
     if USE_MEMORY_PONTO:
         salvar_dados_ponto_no_arquivo(conn)
-        commit_to_github(PONTO_DB_FILE, "Novo registro de ponto")
+        commit_ponto_to_github(PONTO_DB_FILE, "Novo registro de ponto")  # opcional
     conn.close()
-
 
 def obter_pontos_usuario(nome_usuario):
     conn = conectar_ponto()
     cursor = conn.cursor()
-    cursor.execute("SELECT nome_usuario, data, hora_entrada, hora_saida FROM ponto WHERE nome_usuario = ?", (nome_usuario,))
+    cursor.execute(
+        "SELECT id, nome_usuario, data, hora_entrada, hora_saida FROM ponto WHERE nome_usuario = ?",
+        (nome_usuario,)
+    )
     registros = cursor.fetchall()
-    cursor.close()
     conn.close()
     return registros
+
+def sincronizar_ponto():
+    conn = conectar_ponto()
+    resultado = salvar_dados_ponto_no_arquivo(conn)
+    if resultado:
+        commit_ponto_to_github(PONTO_DB_FILE, "Sincronização manual de ponto.db")
+    conn.close()
+    return resultado
