@@ -10,10 +10,13 @@ import base64
 # ==============================
 # Configurações gerais
 # ==============================
-USE_MEMORY_DB = True
 DB_FILE_PATH = "usuarios.db"
-USE_MEMORY_PONTO = True
 PONTO_DB_FILE = "ponto.db"
+
+DEPLOY = os.getenv("DEPLOY") == "1"  
+USE_MEMORY_DB = not DEPLOY           
+USE_MEMORY_PONTO = not DEPLOY       
+
 
 
 # Configuração para salvar no GitHub
@@ -27,7 +30,7 @@ BRANCH = "main"
 def conectar_usuarios():
     if USE_MEMORY_DB:
         conn = sqlite3.connect(":memory:")
-        carregar_dados_do_arquivo(conn)
+        carregar_dados_usuarios_do_arquivo(conn)  
         return conn
     else:
         return sqlite3.connect(DB_FILE_PATH)
@@ -38,7 +41,7 @@ def conectar_estoque(categoria):
 def conectar_ponto():
     if USE_MEMORY_PONTO:
         conn = sqlite3.connect(":memory:")
-        carregar_dados_ponto_do_arquivo(conn)
+        carregar_dados_ponto_do_arquivo(conn)  
         return conn
     else:
         return sqlite3.connect(PONTO_DB_FILE)
@@ -46,138 +49,84 @@ def conectar_ponto():
 # ==============================
 # GitHub Sync
 # ==============================
-def commit_to_github(file_path=DB_FILE_PATH, message="Atualização de usuarios.db"):
-    """Envia o arquivo atualizado para o GitHub"""
+def commit_to_github(file_path, message):
     if not GITHUB_TOKEN:
         print("⚠️ GITHUB_TOKEN não encontrado. Skippando upload para o GitHub.")
         return False
 
     url = f"https://api.github.com/repos/{REPO}/contents/{file_path}"
-
     with open(file_path, "rb") as f:
         content = base64.b64encode(f.read()).decode("utf-8")
 
-    # Verifica se já existe no GitHub
     r = requests.get(url, headers={"Authorization": f"token {GITHUB_TOKEN}"})
-    sha = None
-    if r.status_code == 200:
-        sha = r.json()["sha"]
+    sha = r.json()["sha"] if r.status_code == 200 else None
 
-    data = {
-        "message": message,
-        "content": content,
-        "branch": BRANCH,
-    }
+    data = {"message": message, "content": content, "branch": BRANCH}
     if sha:
         data["sha"] = sha
 
     r = requests.put(url, json=data, headers={"Authorization": f"token {GITHUB_TOKEN}"})
     if r.status_code in (200, 201):
-        print("✅ usuarios.db atualizado no GitHub com sucesso")
+        print(f"✅ {file_path} atualizado no GitHub")
         return True
     else:
-        print("❌ Erro ao atualizar no GitHub:", r.text)
+        print(f"❌ Erro ao atualizar {file_path} no GitHub:", r.text)
         return False
     
-def commit_ponto_to_github(file_path=PONTO_DB_FILE, message="Atualização de ponto.db"):
-    if not GITHUB_TOKEN:
-        print("⚠️ GITHUB_TOKEN não encontrado. Skippando upload para o GitHub.")
-        return False
-
-    url = f"https://api.github.com/repos/{REPO}/contents/{file_path}"
-
-    with open(file_path, "rb") as f:
-        content = base64.b64encode(f.read()).decode("utf-8")
-
-    # Verifica se já existe no GitHub
-    r = requests.get(url, headers={"Authorization": f"token {GITHUB_TOKEN}"})
-    sha = None
-    if r.status_code == 200:
-        sha = r.json()["sha"]
-
-    data = {
-        "message": message,
-        "content": content,
-        "branch": BRANCH,
-    }
-    if sha:
-        data["sha"] = sha
-
-    r = requests.put(url, json=data, headers={"Authorization": f"token {GITHUB_TOKEN}"})
-    if r.status_code in (200, 201):
-        print("✅ ponto.db atualizado no GitHub com sucesso")
-        return True
-    else:
-        print("❌ Erro ao atualizar no GitHub:", r.text)
-        return False
-
 
 # ==============================
 # Operações com banco em memória
 # ==============================
-def carregar_dados_do_arquivo(conn_memory):
+def carregar_dados_usuarios_do_arquivo(conn_memory):
     if os.path.exists(DB_FILE_PATH):
-        try:
-            conn_file = sqlite3.connect(DB_FILE_PATH)
-            conn_file.backup(conn_memory)
-            conn_file.close()
-            print(f"Dados carregados do arquivo {DB_FILE_PATH} para memória")
-        except Exception as e:
-            print(f"Erro ao carregar dados do arquivo: {e}")
+        conn_file = sqlite3.connect(DB_FILE_PATH)
+        conn_file.backup(conn_memory)
+        conn_file.close()
 
-def salvar_dados_no_arquivo(conn_memory):
+def salvar_dados_usuarios_no_arquivo(conn_memory):
     try:
         conn_file = sqlite3.connect(DB_FILE_PATH)
         cursor_file = conn_file.cursor()
-        # Cria tabela se não existir
         cursor_file.execute("""
-        CREATE TABLE IF NOT EXISTS usuarios (
-            id TEXT PRIMARY KEY,
-            username TEXT UNIQUE NOT NULL,
-            email TEXT UNIQUE NOT NULL,
-            senha TEXT NOT NULL
-        )
+            CREATE TABLE IF NOT EXISTS usuarios (
+                id TEXT PRIMARY KEY,
+                username TEXT UNIQUE NOT NULL,
+                email TEXT UNIQUE NOT NULL,
+                senha TEXT NOT NULL
+            )
         """)
         conn_memory.backup(conn_file)
         conn_file.close()
-        print(f"Dados salvos no arquivo {DB_FILE_PATH}")
-        return True
+        return True  # ✅ retorna True se deu certo
     except Exception as e:
-        print(f"Erro ao salvar dados no arquivo: {e}")
+        print(f"Erro ao salvar usuarios.db: {e}")
         return False
 
 def carregar_dados_ponto_do_arquivo(conn_memory):
     if os.path.exists(PONTO_DB_FILE):
-        try:
-            conn_file = sqlite3.connect(PONTO_DB_FILE)
-            conn_file.backup(conn_memory)
-            conn_file.close()
-            print(f"Dados carregados do arquivo {PONTO_DB_FILE} para memória")
-        except Exception as e:
-            print(f"Erro ao carregar dados do ponto.db: {e}")
+        conn_file = sqlite3.connect(PONTO_DB_FILE)
+        conn_file.backup(conn_memory)
+        conn_file.close()
 
 def salvar_dados_ponto_no_arquivo(conn_memory):
     try:
         conn_file = sqlite3.connect(PONTO_DB_FILE)
         cursor_file = conn_file.cursor()
-        # Cria tabela se não existir
         cursor_file.execute("""
-        CREATE TABLE IF NOT EXISTS ponto (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            nome_usuario TEXT NOT NULL,
-            data TEXT NOT NULL,
-            hora_entrada TEXT NOT NULL,
-            hora_saida TEXT
-        )
+            CREATE TABLE IF NOT EXISTS ponto (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                nome_usuario TEXT NOT NULL,
+                data TEXT NOT NULL,
+                hora_entrada TEXT NOT NULL,
+                hora_saida TEXT
+            )
         """)
         conn_memory.backup(conn_file)
         conn_file.close()
-        print(f"Dados do ponto salvos no arquivo {PONTO_DB_FILE}")
-        return True
+        return True  # ✅ retorna True se deu certo
     except Exception as e:
-        print(f"Erro ao salvar dados do ponto no arquivo: {e}")
+        print(f"Erro ao salvar ponto.db: {e}")
         return False
-
 
 # ==============================
 # Funções de manipulação de tabelas
@@ -193,9 +142,10 @@ def criar_tabela_usuarios():
         senha TEXT NOT NULL
     )
     """)
+    conn.commit()
     if USE_MEMORY_DB:
-        salvar_dados_no_arquivo(conn)
-        commit_to_github(DB_FILE_PATH, "Estrutura inicial de usuarios.db criada")
+        salvar_dados_usuarios_no_arquivo(conn)
+        commit_to_github(DB_FILE_PATH, "Tabela usuarios criada")
     conn.close()
 
 def criar_tabelas_estoque(categoria):
@@ -260,37 +210,15 @@ def cadastrar_usuario(username, email, senha):
     conn = conectar_usuarios()
     cursor = conn.cursor()
     user_id = gerar_id_unico()
-
-    try:
-        if not username or not email or not senha:
-            return {"success": False, "error": "Todos os campos são obrigatórios"}
-
-        cursor.execute(
-            "INSERT INTO usuarios (id, username, email, senha) VALUES (?, ?, ?, ?)",
-            (user_id, username, email, hash_senha(senha)),
-        )
-        conn.commit()
-
-        if USE_MEMORY_DB:
-            salvar_dados_no_arquivo(conn)
-            commit_to_github(DB_FILE_PATH, "Novo usuário cadastrado")
-
-        return {"success": True}
-
-    except sqlite3.IntegrityError as e:
-        error_msg = str(e)
-        if "username" in error_msg:
-            return {"success": False, "error": "Nome de usuário já existe"}
-        elif "email" in error_msg:
-            return {"success": False, "error": "Email já cadastrado"}
-        else:
-            return {"success": False, "error": "Erro de integridade do banco de dados"}
-
-    except Exception as e:
-        return {"success": False, "error": f"Erro interno: {str(e)}"}
-
-    finally:
-        conn.close()
+    cursor.execute(
+        "INSERT INTO usuarios (id, username, email, senha) VALUES (?, ?, ?, ?)",
+        (user_id, username, email, hash_senha(senha))
+    )
+    conn.commit()
+    if USE_MEMORY_DB:
+        salvar_dados_usuarios_no_arquivo(conn)
+        commit_to_github(DB_FILE_PATH, f"Novo usuário {username}")
+    conn.close()
 
 def hash_senha(senha):
     return hashlib.sha256(senha.encode()).hexdigest()
@@ -310,9 +238,9 @@ def autenticar_usuario(username, senha):
 
 def sincronizar_usuarios():
     conn = conectar_usuarios()
-    resultado = salvar_dados_no_arquivo(conn)
+    resultado = salvar_dados_usuarios_no_arquivo(conn) 
     if resultado:
-        commit_to_github(DB_FILE_PATH, "Sincronização manual de usuarios.db")
+        commit_to_github(DB_FILE_PATH, "Sincronização manual de usuarios.db")  
     conn.close()
     return resultado
 
@@ -326,7 +254,7 @@ def redefinir_senha(email, nova_senha, key_phrase):
     )
     conn.commit()
     if USE_MEMORY_DB:
-        salvar_dados_no_arquivo(conn)
+        salvar_dados_usuarios_no_arquivo(conn)
         commit_to_github(DB_FILE_PATH, "Senha redefinida")
     conn.close()
 
@@ -419,7 +347,7 @@ def criar_tabela_ponto():
     conn.commit()
     if USE_MEMORY_PONTO:
         salvar_dados_ponto_no_arquivo(conn)
-        commit_ponto_to_github(PONTO_DB_FILE, "Tabela ponto criada")
+        commit_to_github(PONTO_DB_FILE, "Tabela ponto criada")
     conn.close()
 
 def registrar_ponto(nome_usuario, data, hora_entrada, hora_saida=None):
@@ -432,7 +360,7 @@ def registrar_ponto(nome_usuario, data, hora_entrada, hora_saida=None):
     conn.commit()
     if USE_MEMORY_PONTO:
         salvar_dados_ponto_no_arquivo(conn)
-        commit_ponto_to_github(PONTO_DB_FILE, "Novo registro de ponto")  # opcional
+        commit_to_github(PONTO_DB_FILE, "Novo registro de ponto")  # opcional
     conn.close()
 
 def obter_pontos_usuario(nome_usuario):
@@ -448,8 +376,8 @@ def obter_pontos_usuario(nome_usuario):
 
 def sincronizar_ponto():
     conn = conectar_ponto()
-    resultado = salvar_dados_ponto_no_arquivo(conn)
+    resultado = salvar_dados_ponto_no_arquivo(conn)  
     if resultado:
-        commit_ponto_to_github(PONTO_DB_FILE, "Sincronização manual de ponto.db")
+        commit_to_github(PONTO_DB_FILE, "Sincronização manual de ponto.db")
     conn.close()
     return resultado
